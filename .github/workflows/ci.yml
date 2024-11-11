@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull request to main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Specify the runner environment
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Checks out the code from your repository
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2  # Setup .NET SDK for a .NET project
+      with:
+        dotnet-version: '7.0'  # Specify the .NET version you're using
+
+    - name: Restore dependencies
+      run: dotnet restore  # Restores NuGet dependencies
+
+    - name: Build the project
+      run: dotnet build --configuration Release  # Builds the project
+
+    - name: Run tests
+      run: dotnet test  # Runs tests
+
+    - name: Publish the app
+      run: dotnet publish --configuration Release --output ./publish  # Publishes the app
+
+    - name: Upload artifacts (optional)
+      uses: actions/upload-artifact@v2
+      with:
+        name: published-app
+        path: ./publish  # Upload the build output
